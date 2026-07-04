@@ -1,0 +1,19 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*
+
+!.gitignore
+!README.md
+!requirements.txt
+
+!src/
+!src/**
+!tests/
+!tests/**
+!notebooks/
+!notebooks/**
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.DS_Store
