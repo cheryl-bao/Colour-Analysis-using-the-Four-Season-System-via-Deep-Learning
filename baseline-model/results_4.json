@@ -1,0 +1,121 @@
+{
+  "model": "linearsvc",
+  "label_mode": "4",
+  "best_params": {
+    "C": 0.001
+  },
+  "cv_folds": 5,
+  "raw_train_shape": [
+    4008,
+    150528
+  ],
+  "raw_test_shape": [
+    912,
+    150528
+  ],
+  "pca_components": 200,
+  "pca_explained_variance": 0.8905619382858276,
+  "train_shape": [
+    4008,
+    200
+  ],
+  "test_shape": [
+    912,
+    200
+  ],
+  "elapsed_seconds": 1918.947995185852,
+  "convergence_warnings": [
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations.",
+    "Liblinear failed to converge, increase the number of iterations."
+  ],
+  "accuracy": 0.4067982456140351,
+  "classification_report": {
+    "autunno": {
+      "precision": 0.4117647058823529,
+      "recall": 0.35135135135135137,
+      "f1-score": 0.37916666666666665,
+      "support": 259.0
+    },
+    "estate": {
+      "precision": 0.3686635944700461,
+      "recall": 0.43010752688172044,
+      "f1-score": 0.3970223325062035,
+      "support": 186.0
+    },
+    "inverno": {
+      "precision": 0.4303030303030303,
+      "recall": 0.5378787878787878,
+      "f1-score": 0.4781144781144781,
+      "support": 264.0
+    },
+    "primavera": {
+      "precision": 0.4027777777777778,
+      "recall": 0.2857142857142857,
+      "f1-score": 0.33429394812680113,
+      "support": 203.0
+    },
+    "accuracy": 0.4067982456140351,
+    "macro avg": {
+      "precision": 0.40337727710830173,
+      "recall": 0.40126298795653637,
+      "f1-score": 0.3971493563535373,
+      "support": 912.0
+    },
+    "weighted avg": {
+      "precision": 0.4063403248726391,
+      "recall": 0.4067982456140351,
+      "f1-score": 0.4014629541719116,
+      "support": 912.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      91,
+      43,
+      103,
+      22
+    ],
+    [
+      22,
+      80,
+      41,
+      43
+    ],
+    [
+      73,
+      28,
+      142,
+      21
+    ],
+    [
+      35,
+      66,
+      44,
+      58
+    ]
+  ],
+  "label_names": [
+    "autunno",
+    "estate",
+    "inverno",
+    "primavera"
+  ]
+}

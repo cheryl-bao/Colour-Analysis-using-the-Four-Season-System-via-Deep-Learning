@@ -1,0 +1,105 @@
+{
+  "model": "sgd",
+  "label_mode": "4",
+  "best_params": {
+    "alpha": 0.0001
+  },
+  "cv_folds": 2,
+  "raw_train_shape": [
+    200,
+    150528
+  ],
+  "raw_test_shape": [
+    200,
+    150528
+  ],
+  "pca_components": 200,
+  "pca_explained_variance": 1.0,
+  "train_shape": [
+    200,
+    200
+  ],
+  "test_shape": [
+    200,
+    200
+  ],
+  "elapsed_seconds": 71.80228519439697,
+  "convergence_warnings": [
+    "Maximum number of iteration reached before convergence. Consider increasing max_iter to improve the fit.",
+    "Maximum number of iteration reached before convergence. Consider increasing max_iter to improve the fit.",
+    "Maximum number of iteration reached before convergence. Consider increasing max_iter to improve the fit.",
+    "Maximum number of iteration reached before convergence. Consider increasing max_iter to improve the fit."
+  ],
+  "accuracy": 0.255,
+  "classification_report": {
+    "autunno": {
+      "precision": 0.2542372881355932,
+      "recall": 0.2631578947368421,
+      "f1-score": 0.25862068965517243,
+      "support": 57.0
+    },
+    "estate": {
+      "precision": 0.29411764705882354,
+      "recall": 0.36585365853658536,
+      "f1-score": 0.32608695652173914,
+      "support": 41.0
+    },
+    "inverno": {
+      "precision": 0.3333333333333333,
+      "recall": 0.1724137931034483,
+      "f1-score": 0.22727272727272727,
+      "support": 58.0
+    },
+    "primavera": {
+      "precision": 0.18333333333333332,
+      "recall": 0.25,
+      "f1-score": 0.21153846153846154,
+      "support": 44.0
+    },
+    "accuracy": 0.255,
+    "macro avg": {
+      "precision": 0.26625540046527085,
+      "recall": 0.2628563365942189,
+      "f1-score": 0.2558797087470251,
+      "support": 200.0
+    },
+    "weighted avg": {
+      "precision": 0.2697517447657029,
+      "recall": 0.255,
+      "f1-score": 0.25300227508623313,
+      "support": 200.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      15,
+      9,
+      10,
+      23
+    ],
+    [
+      8,
+      15,
+      6,
+      12
+    ],
+    [
+      24,
+      10,
+      10,
+      14
+    ],
+    [
+      12,
+      17,
+      4,
+      11
+    ]
+  ],
+  "label_names": [
+    "autunno",
+    "estate",
+    "inverno",
+    "primavera"
+  ]
+}

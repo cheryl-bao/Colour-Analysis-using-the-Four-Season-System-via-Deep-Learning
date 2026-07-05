@@ -11,6 +11,8 @@
 !tests/**
 !notebooks/
 !notebooks/**
+!baseline-model/
+!baseline-model/**
 
 __pycache__/
 *.pyc
