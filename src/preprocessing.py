@@ -1,7 +1,7 @@
-"""Offline preprocessing pipeline: crop-to-mask, illumination normalization, resize.
+"""Offline preprocessing pipeline: crop-to-mask, illumination normalization.
 
 Usage:
-    python -m src.preprocessing [--limit N]
+    python -m src.preprocessing [--limit N] [--force]
 """
 
 import argparse
@@ -81,7 +81,7 @@ def gray_world_lab_normalize(image_rgb, mask=None):
 
 
 def process_one_row(row, raw_root, processed_root):
-    """Run the full crop -> illumination-normalize -> resize pipeline on one row.
+    """Run the crop -> illumination-normalize pipeline on one row.
 
     Never raises: any failure is captured in the returned dict's "error" field.
     """
@@ -104,14 +104,11 @@ def process_one_row(row, raw_root, processed_root):
             mask_for_stats = None
 
         normalized = gray_world_lab_normalize(cropped, mask=mask_for_stats)
-        resized = cv2.resize(
-            normalized, (config.IMG_SIZE, config.IMG_SIZE), interpolation=cv2.INTER_AREA
-        )
 
         out_rel = Path(row["path_rgb_original"]).with_suffix(".png")
         out_path = processed_root / out_rel
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        cv2.imwrite(str(out_path), cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
+        cv2.imwrite(str(out_path), cv2.cvtColor(normalized, cv2.COLOR_RGB2BGR))
 
         return {
             "path_processed": str(out_rel),
@@ -153,6 +150,11 @@ def compute_normalization_stats(df, processed_root):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=int, default=None, help="process only the first N rows")
+    parser.add_argument(
+        "--force", action="store_true",
+        help="reprocess every row, ignoring cached path_processed results (e.g. after a "
+        "pipeline change like dropping the resize step)",
+    )
     args = parser.parse_args()
 
     annotations = pd.read_csv(config.ANNOTATIONS_RAW)
@@ -170,7 +172,8 @@ def main():
             prev_record = previous.loc[row["path_rgb_original"]]
 
         already_done = (
-            prev_record is not None
+            not args.force
+            and prev_record is not None
             and prev_record["crop_status"] == "cropped"
             and pd.notna(prev_record["path_processed"])
             and (config.PROCESSED_ROOT / prev_record["path_processed"]).exists()
@@ -192,12 +195,29 @@ def main():
 
     out_df = pd.DataFrame(results)
     config.PROCESSED_ROOT.mkdir(parents=True, exist_ok=True)
-    out_df.to_csv(config.ANNOTATIONS_PROCESSED, index=False)
+
+    # A --limit run only processes a head-N subset of annotations -- writing
+    # that to the real annotations_processed.csv would clobber the full
+    # dataset's accumulated results. Smoke tests get their own file instead,
+    # mirroring baseline-model/svm_baseline.py's results_smoketest_*.json.
+    if args.limit is not None:
+        annotations_out_path = config.ANNOTATIONS_PROCESSED.with_name(
+            "annotations_processed_smoketest.csv"
+        )
+        missing_out_path = config.MISSING_MASKS_REPORT.with_name(
+            "missing_masks_report_smoketest.csv"
+        )
+    else:
+        annotations_out_path = config.ANNOTATIONS_PROCESSED
+        missing_out_path = config.MISSING_MASKS_REPORT
+
+    out_df.to_csv(annotations_out_path, index=False)
 
     missing = out_df[out_df["crop_status"] == "mask_missing"]
-    missing.to_csv(config.MISSING_MASKS_REPORT, index=False)
+    missing.to_csv(missing_out_path, index=False)
 
-    print("\ncrop_status summary:")
+    print(f"\nwrote {annotations_out_path}")
+    print("crop_status summary:")
     print(out_df["crop_status"].value_counts().to_string())
 
     if args.limit is None:

@@ -1,22 +1,21 @@
-"""Linear-SVM baseline on full-resolution, fully-preprocessed pixels.
+"""Linear-SVM baseline on downsampled, fully-preprocessed pixels.
 
 Reuses src.dataset.SeasonDataset directly so the SVM sees exactly the same
-crop/illumination-normalize/resize/tensor-normalize pipeline the CNN will,
-isolating "does a learned representation beat a linear decision boundary" as
-the variable under comparison (no resolution or preprocessing mismatch).
+crop/illumination-normalize pipeline the CNN will -- just resized to a
+smaller resolution (64x64 by default, via SeasonDataset's img_size, applied
+as a tensor transform -- see src/dataset.py), isolating "does a learned
+representation beat a linear decision boundary" as the variable under
+comparison, modulo that one resolution difference.
 
-Raw pixels are 3*224*224=150,528-dim, which is impractically slow to fit
-directly (both LinearSVC and SGDClassifier take 10+ minutes even on a few
-hundred samples at that dimensionality). PCA reduces to a few hundred
-components before the linear classifier -- the classic "eigenfaces"
-approach -- while still being unsupervised (no hand-crafted colour
-features), preserving the "raw pixels, no domain feature engineering"
-framing this baseline is meant to have.
+Full-resolution (224x224 -> 150,528-dim) raw pixels are impractically slow
+to fit directly (both LinearSVC and SGDClassifier take 10+ minutes even on
+a few hundred samples at that dimensionality). At 64x64 -> 3*64*64=12,288 dims, that's no longer true:
+the linear classifier fits directly on the flattened pixels, no
+dimensionality reduction needed.
 
 Usage:
-    python baseline-model/svm_baseline.py [--label-mode {4,12}] [--limit N]
-                                           [--model {linearsvc,sgd}]
-                                           [--pca-components K]
+    python baseline-model/svm_baseline.py [--limit N] [--model {linearsvc,sgd}]
+                                           [--img-size N]
                                            [--cv-folds K] [--n-jobs J] [--seed S]
 """
 
@@ -28,12 +27,14 @@ import time
 import warnings
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")  # headless: this script only saves figures, never shows them
+import matplotlib.pyplot as plt
 import numpy as np
 import torch.multiprocessing
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from sklearn.decomposition import PCA
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
@@ -55,7 +56,7 @@ SGD_ALPHA_GRID = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 
 
 def dataset_to_design_matrix(dataset, limit=None, indices=None, num_workers=0, batch_size=64):
-    """Flatten a Dataset yielding ((3,224,224) float tensor, scalar long label)
+    """Flatten a Dataset yielding ((C,H,W) float tensor, scalar long label)
     pairs into (X, y) numpy arrays. Pre-allocated to avoid a transient
     2x-memory list-then-stack. Loads via a DataLoader so `num_workers` > 0
     parallelizes the per-image decode/transform across processes -- default
@@ -77,7 +78,10 @@ def dataset_to_design_matrix(dataset, limit=None, indices=None, num_workers=0, b
         subset = dataset
 
     n = len(subset)
-    n_features = 3 * config.IMG_SIZE * config.IMG_SIZE
+    # Inferred from an actual sample rather than a global constant, so this
+    # works whatever resolution the passed dataset's transform resizes to
+    # (main() may build datasets at different --img-size values).
+    n_features = subset[0][0].numel() if n > 0 else 0
     X = np.empty((n, n_features), dtype=np.float32)
     y = np.empty((n,), dtype=np.int64)
 
@@ -95,11 +99,7 @@ def _season_dataset_labels(dataset):
     """Labels for a SeasonDataset without loading any images (dataset.df is
     already filtered to the dataset's partition; this mirrors __getitem__'s
     label derivation)."""
-    if dataset.label_mode == "4":
-        return dataset.df["class"].map(config.CLASS_TO_IDX).to_numpy()
-    return dataset.df.apply(
-        lambda row: config.SUBCLASS_TO_IDX[(row["class"], row["sub_class"])], axis=1
-    ).to_numpy()
+    return dataset.df["class"].map(config.CLASS_TO_IDX).to_numpy()
 
 
 def stratified_limit_indices(dataset, limit, seed=42):
@@ -114,25 +114,6 @@ def stratified_limit_indices(dataset, limit, seed=42):
         np.arange(n_total), train_size=limit, stratify=labels, random_state=seed
     )
     return indices
-
-
-def apply_pca(X_train, X_test, n_components, seed=42):
-    """Fit PCA on X_train only, transform both -- an unsupervised, fixed
-    (non-domain-specific) dimensionality reduction from 150,528 raw-pixel
-    dims down to `n_components`, making the downstream linear classifier
-    tractable. randomized solver: efficient for n_features >> n_components.
-    """
-    pca = PCA(n_components=n_components, svd_solver="randomized", random_state=seed)
-    X_train_reduced = pca.fit_transform(X_train)
-    X_test_reduced = pca.transform(X_test)
-    explained_variance = float(pca.explained_variance_ratio_.sum())
-    return X_train_reduced, X_test_reduced, explained_variance
-
-
-def get_label_names(label_mode):
-    if label_mode == "4":
-        return list(config.CLASSES)
-    return [f"{c}-{s}" for c, s in config.SUBCLASS_COMBOS]
 
 
 def safe_cv_folds(y, requested_folds):
@@ -154,9 +135,10 @@ def build_search(model_name, y_train, cv_folds=5, seed=42, n_jobs=1):
     cv = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
 
     if model_name == "linearsvc":
-        # n_samples (~4000) < n_features (~150,528) -> dual=True is the
-        # efficient liblinear regime; set explicitly rather than relying on
-        # sklearn's version-dependent dual="auto".
+        # n_samples (~4000) < n_features (~12,288 at the default 64x64 img
+        # size) -> dual=True is the efficient liblinear regime; set
+        # explicitly rather than relying on sklearn's version-dependent
+        # dual="auto".
         base = LinearSVC(dual=True, max_iter=20000, random_state=seed)
         grid = {"C": LINEARSVC_C_GRID}
     elif model_name == "sgd":
@@ -168,7 +150,41 @@ def build_search(model_name, y_train, cv_folds=5, seed=42, n_jobs=1):
     # n_jobs=1 by default: GridSearchCV parallelism is process-based (joblib
     # loky backend) and each worker holds its own copy of that fold's data.
     # Raising n_jobs trades memory for wall-clock speed -- not a default.
-    return GridSearchCV(base, grid, cv=cv, scoring="accuracy", n_jobs=n_jobs, refit=True)
+    # return_train_score=True costs extra fit time (train-fold scoring too)
+    # but is what plot_validation_curve needs to show over/underfitting.
+    return GridSearchCV(
+        base, grid, cv=cv, scoring="accuracy", n_jobs=n_jobs, refit=True,
+        return_train_score=True,
+    )
+
+
+def plot_validation_curve(search, model_name, out_path):
+    """Train vs. CV accuracy across the searched regularization grid (C for
+    LinearSVC, alpha for SGD) -- the SVM analogue of a CNN's per-epoch loss
+    curve, since GridSearchCV has no notion of epochs. Reads mean/std
+    train/test scores straight out of cv_results_ (no refitting)."""
+    param_name = "C" if model_name == "linearsvc" else "alpha"
+    results = search.cv_results_
+    param_values = np.array([p[param_name] for p in results["params"]], dtype=float)
+    order = np.argsort(param_values)
+
+    param_values = param_values[order]
+    train_mean, train_std = results["mean_train_score"][order], results["std_train_score"][order]
+    test_mean, test_std = results["mean_test_score"][order], results["std_test_score"][order]
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    for mean, std, label in [(train_mean, train_std, "train"), (test_mean, test_std, "cv")]:
+        ax.plot(param_values, mean, "o-", label=label)
+        ax.fill_between(param_values, mean - std, mean + std, alpha=0.2)
+
+    ax.set_xscale("log")
+    ax.set_xlabel(param_name)
+    ax.set_ylabel("accuracy")
+    ax.set_title(f"{model_name} validation curve")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
 
 
 def evaluate_model(model, X_test, y_test, label_names):
@@ -192,15 +208,15 @@ def evaluate_model(model, X_test, y_test, label_names):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--label-mode", choices=["4", "12"], default="4")
     parser.add_argument(
         "--limit", type=int, default=None,
         help="use a stratified subsample of N rows per partition (fast smoke test)",
     )
     parser.add_argument("--model", choices=["linearsvc", "sgd"], default="linearsvc")
     parser.add_argument(
-        "--pca-components", type=int, default=200,
-        help="PCA components to reduce raw pixels to before the classifier (default: 200)",
+        "--img-size", type=int, default=64,
+        help="resize images to N x N (via SeasonDataset's tensor transform) before "
+        "flattening -- small enough at the default to skip PCA entirely (default: 64)",
     )
     parser.add_argument("--cv-folds", type=int, default=5)
     parser.add_argument("--n-jobs", type=int, default=1)
@@ -213,8 +229,8 @@ def main():
 
     t0 = time.time()
 
-    train_ds = SeasonDataset(partition="train", label_mode=args.label_mode)
-    test_ds = SeasonDataset(partition="test", label_mode=args.label_mode)
+    train_ds = SeasonDataset(partition="train", img_size=args.img_size)
+    test_ds = SeasonDataset(partition="test", img_size=args.img_size)
 
     train_indices = stratified_limit_indices(train_ds, args.limit, seed=args.seed)
     test_indices = stratified_limit_indices(test_ds, args.limit, seed=args.seed)
@@ -224,20 +240,10 @@ def main():
     X_test, y_test = dataset_to_design_matrix(
         test_ds, indices=test_indices, num_workers=args.load_workers
     )
-    raw_train_shape, raw_test_shape = list(X_train.shape), list(X_test.shape)
     print(
         f"X_train {X_train.shape} ({X_train.nbytes / 1e9:.2f} GB), "
         f"X_test {X_test.shape} ({X_test.nbytes / 1e9:.2f} GB) "
         f"[loaded in {time.time() - t0:.1f}s with {args.load_workers} workers]"
-    )
-
-    t_pca = time.time()
-    X_train, X_test, explained_variance = apply_pca(
-        X_train, X_test, args.pca_components, seed=args.seed
-    )
-    print(
-        f"PCA: {raw_train_shape[1]} -> {X_train.shape[1]} dims "
-        f"(explained variance {explained_variance:.3f}) in {time.time() - t_pca:.1f}s"
     )
 
     search = build_search(
@@ -260,16 +266,12 @@ def main():
             f"warning: {len(convergence_warnings)} ConvergenceWarning(s) during search; {suggestion}"
         )
 
-    label_names = get_label_names(args.label_mode)
+    label_names = list(config.CLASSES)
     results = {
         "model": args.model,
-        "label_mode": args.label_mode,
+        "img_size": args.img_size,
         "best_params": search.best_params_,
         "cv_folds": safe_cv_folds(y_train, args.cv_folds),
-        "raw_train_shape": raw_train_shape,
-        "raw_test_shape": raw_test_shape,
-        "pca_components": args.pca_components,
-        "pca_explained_variance": explained_variance,
         "train_shape": list(X_train.shape),
         "test_shape": list(X_test.shape),
         "elapsed_seconds": time.time() - t0,
@@ -278,12 +280,13 @@ def main():
     }
 
     out_dir = Path(__file__).resolve().parent
-    out_name = (
-        f"results_smoketest_{args.label_mode}.json"
-        if args.limit
-        else f"results_{args.label_mode}.json"
-    )
-    out_path = out_dir / out_name
+    suffix = "smoketest" if args.limit else None
+    out_path = out_dir / (f"results_{suffix}.json" if suffix else "results.json")
+    curve_path = out_dir / (f"validation_curve_{suffix}.png" if suffix else "validation_curve.png")
+
+    plot_validation_curve(search, args.model, curve_path)
+    results["validation_curve_path"] = curve_path.name
+
     out_path.write_text(json.dumps(results, indent=2))
 
     print(
@@ -292,6 +295,7 @@ def main():
         f"best params = {search.best_params_}"
     )
     print(f"wrote {out_path}")
+    print(f"wrote {curve_path}")
 
 
 if __name__ == "__main__":

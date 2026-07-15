@@ -9,22 +9,15 @@ ANNOTATIONS_PROCESSED = PROCESSED_ROOT / "annotations_processed.csv"
 MISSING_MASKS_REPORT = PROCESSED_ROOT / "missing_masks_report.csv"
 NORM_STATS_PATH = PROCESSED_ROOT / "normalization_stats.json"
 
-IMG_SIZE = 224
+IMG_SIZE = 224  # default CNN input resolution; applied as a tensor transform in
+# src/dataset.py, not baked into the data/processed/ cache -- other consumers
+# (e.g. the SVM baseline) pass their own SeasonDataset(img_size=...) instead.
 CROP_PADDING_FRAC = 0.15
 MASK_BINARY_THRESHOLD = 127
 
 CLASSES = ["autunno", "estate", "inverno", "primavera"]
 
-# 12-way — explicit, ordered so label indices stay stable across runs.
-SUBCLASS_COMBOS = [
-    ("autunno", "deep"), ("autunno", "soft"), ("autunno", "warm"),
-    ("estate", "cool"), ("estate", "light"), ("estate", "soft"),
-    ("inverno", "bright"), ("inverno", "cool"), ("inverno", "deep"),
-    ("primavera", "bright"), ("primavera", "light"), ("primavera", "warm"),
-]
-
 CLASS_TO_IDX = {c: i for i, c in enumerate(CLASSES)}
-SUBCLASS_TO_IDX = {combo: i for i, combo in enumerate(SUBCLASS_COMBOS)}
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)

@@ -43,13 +43,33 @@ def test_dataset_to_design_matrix_respects_indices():
     assert (X[1] == 2.0).all() and y[1] == 2 % 4
 
 
-class _FakeSeasonDataset:
-    """Mimics the .df/.label_mode surface stratified_limit_indices needs,
-    without depending on real data/processed/ files."""
+class _TinySmallImageDataset(torch.utils.data.Dataset):
+    """Yields 64x64 images, unlike _TinyDataset's 224x224 -- exercises that
+    dataset_to_design_matrix infers feature dim from the data rather than a
+    hardcoded constant, since main() now varies resolution via --img-size."""
 
-    def __init__(self, classes, label_mode="4"):
-        self.df = pd.DataFrame({"class": classes, "sub_class": ["deep"] * len(classes)})
-        self.label_mode = label_mode
+    def __init__(self, n):
+        self.n = n
+
+    def __len__(self):
+        return self.n
+
+    def __getitem__(self, idx):
+        image = torch.full((3, 64, 64), float(idx), dtype=torch.float32)
+        return image, torch.tensor(idx % 4, dtype=torch.long)
+
+
+def test_dataset_to_design_matrix_infers_feature_dim_from_data():
+    X, y = svm_baseline.dataset_to_design_matrix(_TinySmallImageDataset(5))
+    assert X.shape == (5, 3 * 64 * 64)
+
+
+class _FakeSeasonDataset:
+    """Mimics the .df surface stratified_limit_indices needs, without
+    depending on real data/processed/ files."""
+
+    def __init__(self, classes):
+        self.df = pd.DataFrame({"class": classes})
 
     def __len__(self):
         return len(self.df)
@@ -73,25 +93,6 @@ def test_stratified_limit_indices_none_when_limit_not_smaller():
     ds = _FakeSeasonDataset(["autunno", "estate"])
     assert svm_baseline.stratified_limit_indices(ds, limit=None) is None
     assert svm_baseline.stratified_limit_indices(ds, limit=2) is None
-
-
-def test_apply_pca_reduces_dimensionality():
-    rng = np.random.default_rng(0)
-    X_train = rng.normal(size=(30, 500)).astype(np.float32)
-    X_test = rng.normal(size=(10, 500)).astype(np.float32)
-
-    X_train_reduced, X_test_reduced, explained_variance = svm_baseline.apply_pca(
-        X_train, X_test, n_components=5
-    )
-
-    assert X_train_reduced.shape == (30, 5)
-    assert X_test_reduced.shape == (10, 5)
-    assert 0.0 <= explained_variance <= 1.0
-
-
-def test_get_label_names():
-    assert svm_baseline.get_label_names("4") == list(svm_baseline.config.CLASSES)
-    assert len(svm_baseline.get_label_names("12")) == 12
 
 
 def test_safe_cv_folds_clamps_on_small_classes():

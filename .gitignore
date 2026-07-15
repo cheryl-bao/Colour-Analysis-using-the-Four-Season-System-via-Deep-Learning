@@ -13,6 +13,13 @@
 !notebooks/**
 !baseline-model/
 !baseline-model/**
+!CNN-models/
+!CNN-models/**
+!figures/
+!figures/**
+
+# regenerable training artifacts -- not source
+CNN-models/checkpoints/
 
 __pycache__/
 *.pyc
