@@ -19,5 +19,15 @@ CLASSES = ["autunno", "estate", "inverno", "primavera"]
 
 CLASS_TO_IDX = {c: i for i, c in enumerate(CLASSES)}
 
+# English names for display only (plots, reports) -- CLASSES stays the
+# source of truth for data labels/indices, so annotations.csv and
+# CLASS_TO_IDX are unaffected.
+CLASS_DISPLAY_NAMES = {
+    "autunno": "Autumn",
+    "estate": "Summer",
+    "inverno": "Winter",
+    "primavera": "Spring",
+}
+
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)

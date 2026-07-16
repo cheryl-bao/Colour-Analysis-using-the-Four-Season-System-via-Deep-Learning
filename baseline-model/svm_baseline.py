@@ -295,7 +295,7 @@ def main():
             f"warning: {len(convergence_warnings)} ConvergenceWarning(s) during search; {suggestion}"
         )
 
-    label_names = list(config.CLASSES)
+    label_names = [config.CLASS_DISPLAY_NAMES[c] for c in config.CLASSES]
     results = {
         "model": args.model,
         "img_size": args.img_size,

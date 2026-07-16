@@ -186,7 +186,7 @@ def main():
         test_ds, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers
     )
 
-    label_names = list(config.CLASSES)
+    label_names = [config.CLASS_DISPLAY_NAMES[c] for c in config.CLASSES]
     model = SeasonCNN(num_classes=len(label_names)).to(device)
 
     # TODO: these are placeholders -- tune optimizer/lr/loss to taste.
