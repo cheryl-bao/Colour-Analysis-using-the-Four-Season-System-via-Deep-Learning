@@ -37,7 +37,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import SGDClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+)
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
 from sklearn.svm import LinearSVC
 from torch.utils.data import DataLoader, Subset
@@ -187,6 +192,30 @@ def plot_validation_curve(search, model_name, out_path):
     plt.close(fig)
 
 
+def plot_confusion_matrix(cm, label_names, out_path):
+    """Test-set confusion matrix as a heatmap, raw counts and row-normalized
+    recall side by side -- counts alone hide class-imbalance effects (test
+    partition sizes differ per class), row-normalization surfaces per-class
+    recall directly."""
+    cm = np.array(cm)
+    cm_norm = cm / cm.sum(axis=1, keepdims=True)
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+    for ax, matrix, title, fmt in [
+        (axes[0], cm, "counts", "d"),
+        (axes[1], cm_norm, "row-normalized (recall)", ".2f"),
+    ]:
+        ConfusionMatrixDisplay(matrix, display_labels=label_names).plot(
+            ax=ax, cmap="Blues", values_format=fmt, colorbar=False
+        )
+        ax.set_title(title)
+        ax.tick_params(axis="x", rotation=45)
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
 def evaluate_model(model, X_test, y_test, label_names):
     y_pred = model.predict(X_test)
     return {
@@ -283,9 +312,13 @@ def main():
     suffix = "smoketest" if args.limit else None
     out_path = out_dir / (f"results_{suffix}.json" if suffix else "results.json")
     curve_path = out_dir / (f"validation_curve_{suffix}.png" if suffix else "validation_curve.png")
+    cm_path = out_dir / (f"confusion_matrix_{suffix}.png" if suffix else "confusion_matrix.png")
 
     plot_validation_curve(search, args.model, curve_path)
     results["validation_curve_path"] = curve_path.name
+
+    plot_confusion_matrix(results["confusion_matrix"], label_names, cm_path)
+    results["confusion_matrix_path"] = cm_path.name
 
     out_path.write_text(json.dumps(results, indent=2))
 
@@ -296,6 +329,7 @@ def main():
     )
     print(f"wrote {out_path}")
     print(f"wrote {curve_path}")
+    print(f"wrote {cm_path}")
 
 
 if __name__ == "__main__":
