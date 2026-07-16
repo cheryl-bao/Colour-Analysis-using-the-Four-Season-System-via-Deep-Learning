@@ -37,12 +37,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import SGDClassifier
-from sklearn.metrics import (
-    ConfusionMatrixDisplay,
-    accuracy_score,
-    classification_report,
-    confusion_matrix,
-)
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
 from sklearn.svm import LinearSVC
 from torch.utils.data import DataLoader, Subset
@@ -55,6 +50,7 @@ torch.multiprocessing.set_sharing_strategy("file_system")
 
 from src import config
 from src.dataset import SeasonDataset
+from src.plotting import plot_confusion_matrix
 
 LINEARSVC_C_GRID = [0.001, 0.01, 0.1, 1, 10]
 SGD_ALPHA_GRID = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
@@ -187,30 +183,6 @@ def plot_validation_curve(search, model_name, out_path):
     ax.set_ylabel("accuracy")
     ax.set_title(f"{model_name} validation curve")
     ax.legend()
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=150)
-    plt.close(fig)
-
-
-def plot_confusion_matrix(cm, label_names, out_path):
-    """Test-set confusion matrix as a heatmap, raw counts and row-normalized
-    recall side by side -- counts alone hide class-imbalance effects (test
-    partition sizes differ per class), row-normalization surfaces per-class
-    recall directly."""
-    cm = np.array(cm)
-    cm_norm = cm / cm.sum(axis=1, keepdims=True)
-
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
-    for ax, matrix, title, fmt in [
-        (axes[0], cm, "counts", "d"),
-        (axes[1], cm_norm, "row-normalized (recall)", ".2f"),
-    ]:
-        ConfusionMatrixDisplay(matrix, display_labels=label_names).plot(
-            ax=ax, cmap="Blues", values_format=fmt, colorbar=False
-        )
-        ax.set_title(title)
-        ax.tick_params(axis="x", rotation=45)
-
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)

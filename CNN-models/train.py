@@ -46,6 +46,7 @@ torch.multiprocessing.set_sharing_strategy("file_system")
 
 from src import config
 from src.dataset import SeasonDataset
+from src.plotting import plot_confusion_matrix
 
 from model import SeasonCNN
 
@@ -242,12 +243,18 @@ def main():
     }
 
     out_dir = Path(__file__).resolve().parent
-    out_name = "results_smoketest.json" if args.limit else "results.json"
-    out_path = out_dir / out_name
+    suffix = "smoketest" if args.limit else None
+    out_path = out_dir / (f"results_{suffix}.json" if suffix else "results.json")
+    cm_path = out_dir / (f"confusion_matrix_{suffix}.png" if suffix else "confusion_matrix.png")
+
+    plot_confusion_matrix(results["confusion_matrix"], label_names, cm_path)
+    results["confusion_matrix_path"] = cm_path.name
+
     out_path.write_text(json.dumps(results, indent=2))
 
     print(f"done in {results['elapsed_seconds']:.1f}s; test accuracy = {test_acc:.4f}")
     print(f"wrote {out_path}")
+    print(f"wrote {cm_path}")
 
 
 if __name__ == "__main__":
