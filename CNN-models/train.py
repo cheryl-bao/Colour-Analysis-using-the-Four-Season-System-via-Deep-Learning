@@ -105,6 +105,7 @@ def train_one_epoch(model, loader, optimizer, criterion, device):
         loss = criterion(logits, labels)
         loss.backward()
         optimizer.step()
+        optimizer.zero_grad()
 
         batch_n = labels.size(0)
         total_loss += loss.item() * batch_n
@@ -190,7 +191,6 @@ def main():
     label_names = [config.CLASS_DISPLAY_NAMES[c] for c in config.CLASSES]
     model = SeasonCNN(num_classes=len(label_names)).to(device)
 
-    # TODO: these are placeholders -- tune optimizer/lr/loss to taste.
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     criterion = nn.CrossEntropyLoss()
 
@@ -213,13 +213,6 @@ def main():
             f"val_loss={val_loss:.4f} val_acc={val_acc:.4f}"
         )
 
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
-            torch.save(model.state_dict(), checkpoint_path)
-
-    model.load_state_dict(torch.load(checkpoint_path, map_location=device))
-    test_loss, test_acc, y_true, y_pred = evaluate(model, test_loader, criterion, device)
-
     results = {
         "epochs": args.epochs,
         "batch_size": args.batch_size,
@@ -227,35 +220,16 @@ def main():
         "val_frac": args.val_frac,
         "seed": args.seed,
         "device": str(device),
-        "best_val_acc": best_val_acc,
-        "test_loss": test_loss,
-        "accuracy": test_acc,
-        "classification_report": classification_report(
-            y_true, y_pred, labels=list(range(len(label_names))),
-            target_names=label_names, output_dict=True, zero_division=0,
-        ),
-        "confusion_matrix": confusion_matrix(
-            y_true, y_pred, labels=list(range(len(label_names)))
-        ).tolist(),
-        "label_names": label_names,
-        "history": history,
-        "elapsed_seconds": time.time() - t0,
+        "best_val_acc": best_val_acc
     }
 
     out_dir = Path(__file__).resolve().parent
     suffix = "smoketest" if args.limit else None
     out_path = out_dir / (f"results_{suffix}.json" if suffix else "results.json")
-    cm_path = out_dir / (f"confusion_matrix_{suffix}.png" if suffix else "confusion_matrix.png")
-
-    plot_confusion_matrix(results["confusion_matrix"], label_names, cm_path)
-    results["confusion_matrix_path"] = cm_path.name
 
     out_path.write_text(json.dumps(results, indent=2))
 
-    print(f"done in {results['elapsed_seconds']:.1f}s; test accuracy = {test_acc:.4f}")
     print(f"wrote {out_path}")
-    print(f"wrote {cm_path}")
-
 
 if __name__ == "__main__":
     main()
