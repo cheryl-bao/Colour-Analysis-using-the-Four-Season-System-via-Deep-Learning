@@ -196,10 +196,9 @@ def main():
 
     checkpoint_dir = Path(__file__).resolve().parent / "checkpoints"
     checkpoint_dir.mkdir(exist_ok=True)
-    checkpoint_path = checkpoint_dir / "best.pt"
+    model_num = "seasoncnn"
 
     history = []
-    best_val_acc = -1.0
     for epoch in range(1, args.epochs + 1):
         train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion, device)
         val_loss, val_acc, _, _ = evaluate(model, val_loader, criterion, device)
@@ -213,6 +212,8 @@ def main():
             f"val_loss={val_loss:.4f} val_acc={val_acc:.4f}"
         )
 
+        torch.save(model.state_dict(), checkpoint_dir / f"{model_num}_epoch_{epoch}.pth")
+
     results = {
         "epochs": args.epochs,
         "batch_size": args.batch_size,
@@ -220,7 +221,6 @@ def main():
         "val_frac": args.val_frac,
         "seed": args.seed,
         "device": str(device),
-        "best_val_acc": best_val_acc
     }
 
     out_dir = Path(__file__).resolve().parent
