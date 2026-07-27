@@ -29,6 +29,22 @@ def get_default_transform(img_size=config.IMG_SIZE):
     ])
 
 
+def get_train_transform(img_size=config.IMG_SIZE):
+    """Like get_default_transform, but with light geometric augmentation
+    for training. No colour jitter/grayscale/hue-shift here on purpose --
+    the class labels (autunno/estate/inverno/primavera) are themselves a
+    colour-based encoding of the subject, so perturbing hue/brightness/
+    saturation risks flipping the very signal the model is meant to learn."""
+    mean, std = load_normalization_stats()
+    return transforms.Compose([
+        transforms.RandomResizedCrop(img_size, scale=(0.85, 1.0), ratio=(0.95, 1.05)),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(10),
+        transforms.ToTensor(),
+        transforms.Normalize(mean, std),
+    ])
+
+
 class SeasonDataset(Dataset):
     def __init__(
         self,

@@ -45,7 +45,7 @@ from torch.utils.data import DataLoader, Subset
 torch.multiprocessing.set_sharing_strategy("file_system")
 
 from src import config
-from src.dataset import SeasonDataset
+from src.dataset import SeasonDataset, get_default_transform, get_train_transform
 from src.plotting import plot_confusion_matrix
 
 from model import SeasonCNN
@@ -159,7 +159,13 @@ def main():
     t0 = time.time()
     device = get_device(args.device)
 
-    full_train_ds = SeasonDataset(partition="train")
+    # Two SeasonDataset instances over the same "train" partition rows (same
+    # csv, same filter, same row order -- so indices from one apply cleanly
+    # to the other): one with training-time augmentation, one without, so
+    # the val split -- carved out of "train" below -- is evaluated on
+    # unaugmented images like the test set is.
+    full_train_ds = SeasonDataset(partition="train", transform=get_train_transform())
+    full_train_eval_ds = SeasonDataset(partition="train", transform=get_default_transform())
     full_test_ds = SeasonDataset(partition="test")
 
     limit_train_idx = stratified_limit_indices(full_train_ds, args.limit, seed=args.seed)
@@ -175,7 +181,7 @@ def main():
         full_train_ds, train_pool_idx, val_frac=args.val_frac, seed=args.seed
     )
     train_ds = Subset(full_train_ds, train_idx)
-    val_ds = Subset(full_train_ds, val_idx)
+    val_ds = Subset(full_train_eval_ds, val_idx)
     test_ds = Subset(full_test_ds, test_pool_idx)
 
     train_loader = DataLoader(
