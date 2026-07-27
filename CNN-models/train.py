@@ -152,6 +152,12 @@ def main():
     )
     parser.add_argument("--device", default=None, help="override auto-detected device")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--run-name", default=None,
+        help="tag this run's results.json and checkpoint filenames (e.g. "
+             "\"5block-64ch\") so it doesn't overwrite a previous run's -- "
+             "omit to keep the default results.json/\"seasoncnn\" naming",
+    )
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
@@ -202,7 +208,7 @@ def main():
 
     checkpoint_dir = Path(__file__).resolve().parent / "checkpoints"
     checkpoint_dir.mkdir(exist_ok=True)
-    model_num = "seasoncnn"
+    model_num = args.run_name or "seasoncnn"
 
     history = []
     for epoch in range(1, args.epochs + 1):
@@ -221,6 +227,7 @@ def main():
         torch.save(model.state_dict(), checkpoint_dir / f"{model_num}_epoch_{epoch}.pth")
 
     results = {
+        "run_name": args.run_name,
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "lr": args.lr,
@@ -231,7 +238,8 @@ def main():
     }
 
     out_dir = Path(__file__).resolve().parent
-    suffix = "smoketest" if args.limit else None
+    suffix_parts = [p for p in (args.run_name, "smoketest" if args.limit else None) if p]
+    suffix = "_".join(suffix_parts) if suffix_parts else None
     out_path = out_dir / (f"results_{suffix}.json" if suffix else "results.json")
 
     out_path.write_text(json.dumps(results, indent=2))
