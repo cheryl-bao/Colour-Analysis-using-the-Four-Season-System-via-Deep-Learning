@@ -48,7 +48,7 @@ from src import config
 from src.dataset import SeasonDataset, get_default_transform, get_train_transform
 from src.plotting import plot_confusion_matrix
 
-from model import SeasonCNN
+from model import ResNetTransfer, SeasonCNN
 
 
 def get_device(requested=None):
@@ -158,6 +158,17 @@ def main():
              "\"5block-64ch\") so it doesn't overwrite a previous run's -- "
              "omit to keep the default results.json/\"seasoncnn\" naming",
     )
+    parser.add_argument(
+        "--arch", choices=["seasoncnn", "resnet18"], default="seasoncnn",
+        help="model architecture -- resnet18 is an ImageNet-pretrained "
+             "transfer-learning model (see --finetune-backbone); default "
+             "seasoncnn is the from-scratch CNN in model.py",
+    )
+    parser.add_argument(
+        "--finetune-backbone", action="store_true",
+        help="only used with --arch resnet18: unfreeze and fine-tune the "
+             "pretrained backbone instead of training just the final layer",
+    )
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
@@ -201,14 +212,22 @@ def main():
     )
 
     label_names = [config.CLASS_DISPLAY_NAMES[c] for c in config.CLASSES]
-    model = SeasonCNN(num_classes=len(label_names)).to(device)
+    if args.arch == "resnet18":
+        model = ResNetTransfer(
+            num_classes=len(label_names), freeze_backbone=not args.finetune_backbone
+        ).to(device)
+    else:
+        model = SeasonCNN(num_classes=len(label_names)).to(device)
 
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    # Only resnet18 (frozen-backbone case) ever has requires_grad=False
+    # params; this filter is a no-op for seasoncnn, where every param trains.
+    trainable_params = [p for p in model.parameters() if p.requires_grad]
+    optimizer = optim.Adam(trainable_params, lr=args.lr)
     criterion = nn.CrossEntropyLoss()
 
     checkpoint_dir = Path(__file__).resolve().parent / "checkpoints"
     checkpoint_dir.mkdir(exist_ok=True)
-    model_num = args.run_name or "seasoncnn"
+    model_num = args.run_name or args.arch
 
     history = []
     for epoch in range(1, args.epochs + 1):
@@ -228,6 +247,8 @@ def main():
 
     results = {
         "run_name": args.run_name,
+        "arch": args.arch,
+        "finetune_backbone": args.finetune_backbone if args.arch == "resnet18" else None,
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "lr": args.lr,
