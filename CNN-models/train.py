@@ -221,6 +221,7 @@ def main():
         "val_frac": args.val_frac,
         "seed": args.seed,
         "device": str(device),
+        "history": history,
     }
 
     out_dir = Path(__file__).resolve().parent
