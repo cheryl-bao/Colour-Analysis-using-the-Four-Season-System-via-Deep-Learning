@@ -66,10 +66,14 @@ class ResNetTransfer(nn.Module):
             for param in self.backbone.parameters():
                 param.requires_grad = False
 
-        # Replacing fc after the freeze loop above -- a freshly constructed
-        # layer defaults to requires_grad=True, so it always trains.
         in_features = self.backbone.fc.in_features
-        self.backbone.fc = nn.Linear(in_features, num_classes)
+        self.backbone.fc = nn.Sequential(
+            nn.Linear(in_features, 256),
+            nn.ReLU(inplace=True),
+            nn.Linear(256, 128),
+            nn.ReLU(inplace=True),
+            nn.Linear(128, num_classes)
+        )
 
     def forward(self, x):
         return self.backbone(x)
