@@ -169,6 +169,14 @@ def main():
         help="only used with --arch resnet18: unfreeze and fine-tune the "
              "pretrained backbone instead of training just the final layer",
     )
+    parser.add_argument(
+        "--data-root", default=None,
+        help="use a processed dataset other than the default data/processed/ "
+             "(e.g. data/processed_crop_only) -- expects the same layout: "
+             "annotations_processed.csv and normalization_stats.json inside "
+             "it, alongside the processed images. Relative paths are "
+             "resolved from the repo root. Omit to use data/processed/",
+    )
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
@@ -176,14 +184,32 @@ def main():
     t0 = time.time()
     device = get_device(args.device)
 
+    if args.data_root:
+        data_root = Path(args.data_root)
+        if not data_root.is_absolute():
+            data_root = config.REPO_ROOT / data_root
+    else:
+        data_root = config.PROCESSED_ROOT
+    csv_path = data_root / config.ANNOTATIONS_PROCESSED.name
+    norm_stats_path = data_root / config.NORM_STATS_PATH.name
+
     # Two SeasonDataset instances over the same "train" partition rows (same
     # csv, same filter, same row order -- so indices from one apply cleanly
     # to the other): one with training-time augmentation, one without, so
     # the val split -- carved out of "train" below -- is evaluated on
     # unaugmented images like the test set is.
-    full_train_ds = SeasonDataset(partition="train", transform=get_train_transform())
-    full_train_eval_ds = SeasonDataset(partition="train", transform=get_default_transform())
-    full_test_ds = SeasonDataset(partition="test")
+    full_train_ds = SeasonDataset(
+        csv_path=csv_path, processed_root=data_root, partition="train",
+        transform=get_train_transform(norm_stats_path=norm_stats_path),
+    )
+    full_train_eval_ds = SeasonDataset(
+        csv_path=csv_path, processed_root=data_root, partition="train",
+        transform=get_default_transform(norm_stats_path=norm_stats_path),
+    )
+    full_test_ds = SeasonDataset(
+        csv_path=csv_path, processed_root=data_root, partition="test",
+        transform=get_default_transform(norm_stats_path=norm_stats_path),
+    )
 
     limit_train_idx = stratified_limit_indices(full_train_ds, args.limit, seed=args.seed)
     train_pool_idx = (
@@ -249,6 +275,7 @@ def main():
         "run_name": args.run_name,
         "arch": args.arch,
         "finetune_backbone": args.finetune_backbone if args.arch == "resnet18" else None,
+        "data_root": str(data_root),
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "lr": args.lr,

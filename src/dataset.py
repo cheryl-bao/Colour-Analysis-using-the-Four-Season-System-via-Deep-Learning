@@ -9,19 +9,23 @@ from torchvision import transforms
 from src import config
 
 
-def load_normalization_stats():
-    if config.NORM_STATS_PATH.exists():
-        stats = json.loads(config.NORM_STATS_PATH.read_text())
+def load_normalization_stats(norm_stats_path=None):
+    """norm_stats_path defaults to config.NORM_STATS_PATH -- pass the one
+    alongside a non-default processed dataset (e.g. data/processed_crop_only/)
+    so its own mean/std are used instead of the default dataset's."""
+    norm_stats_path = norm_stats_path or config.NORM_STATS_PATH
+    if norm_stats_path.exists():
+        stats = json.loads(norm_stats_path.read_text())
         return stats["mean"], stats["std"]
     return config.IMAGENET_MEAN, config.IMAGENET_STD
 
 
-def get_default_transform(img_size=config.IMG_SIZE):
+def get_default_transform(img_size=config.IMG_SIZE, norm_stats_path=None):
     """Resize -> tensor -> normalize. Cached files under data/processed/ are
     left at their cropped (variable) resolution -- resizing to a fixed,
     consumer-chosen size happens here instead, so e.g. the CNN (224) and the
     SVM baseline (64) can each use their own resolution off the same cache."""
-    mean, std = load_normalization_stats()
+    mean, std = load_normalization_stats(norm_stats_path)
     return transforms.Compose([
         transforms.Resize((img_size, img_size)),
         transforms.ToTensor(),
@@ -29,13 +33,13 @@ def get_default_transform(img_size=config.IMG_SIZE):
     ])
 
 
-def get_train_transform(img_size=config.IMG_SIZE):
+def get_train_transform(img_size=config.IMG_SIZE, norm_stats_path=None):
     """Like get_default_transform, but with light geometric augmentation
     for training. No colour jitter/grayscale/hue-shift here on purpose --
     the class labels (autunno/estate/inverno/primavera) are themselves a
     colour-based encoding of the subject, so perturbing hue/brightness/
     saturation risks flipping the very signal the model is meant to learn."""
-    mean, std = load_normalization_stats()
+    mean, std = load_normalization_stats(norm_stats_path)
     return transforms.Compose([
         transforms.RandomResizedCrop(img_size, scale=(0.85, 1.0), ratio=(0.95, 1.05)),
         transforms.RandomHorizontalFlip(),
