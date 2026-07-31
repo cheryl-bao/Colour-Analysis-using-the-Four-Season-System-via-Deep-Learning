@@ -80,8 +80,11 @@ def gray_world_lab_normalize(image_rgb, mask=None):
     return cv2.cvtColor(lab.astype(np.uint8), cv2.COLOR_LAB2RGB)
 
 
-def process_one_row(row, raw_root, processed_root):
+def process_one_row(row, raw_root, processed_root, normalize=True):
     """Run the crop -> illumination-normalize pipeline on one row.
+
+    normalize=False skips gray_world_lab_normalize, writing the cropped
+    image as-is (e.g. for comparing a crop-only variant of the dataset).
 
     Never raises: any failure is captured in the returned dict's "error" field.
     """
@@ -103,12 +106,14 @@ def process_one_row(row, raw_root, processed_root):
             cropped, crop_status = image, "mask_missing"
             mask_for_stats = None
 
-        normalized = gray_world_lab_normalize(cropped, mask=mask_for_stats)
+        output_image = (
+            gray_world_lab_normalize(cropped, mask=mask_for_stats) if normalize else cropped
+        )
 
         out_rel = Path(row["path_rgb_original"]).with_suffix(".png")
         out_path = processed_root / out_rel
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        cv2.imwrite(str(out_path), cv2.cvtColor(normalized, cv2.COLOR_RGB2BGR))
+        cv2.imwrite(str(out_path), cv2.cvtColor(output_image, cv2.COLOR_RGB2BGR))
 
         return {
             "path_processed": str(out_rel),
@@ -126,7 +131,7 @@ def _load_previous_results(processed_csv_path):
     return prev.set_index("path_rgb_original")
 
 
-def compute_normalization_stats(df, processed_root):
+def compute_normalization_stats(df, processed_root, norm_stats_path):
     """Per-channel mean/std over the processed train partition, saved to JSON."""
     train_df = df[(df["partition"] == "train") & df["path_processed"].notna()]
     if train_df.empty:
@@ -143,7 +148,7 @@ def compute_normalization_stats(df, processed_root):
     std = np.sqrt(sum_sq / count - mean**2)
 
     stats = {"mean": mean.tolist(), "std": std.tolist()}
-    config.NORM_STATS_PATH.write_text(json.dumps(stats, indent=2))
+    norm_stats_path.write_text(json.dumps(stats, indent=2))
     return stats
 
 
@@ -155,13 +160,29 @@ def main():
         help="reprocess every row, ignoring cached path_processed results (e.g. after a "
         "pipeline change like dropping the resize step)",
     )
+    parser.add_argument(
+        "--skip-color-normalize", action="store_true",
+        help="crop only -- skip gray_world_lab_normalize, e.g. to compare a crop-only "
+        "variant of the dataset against the default crop+normalize one",
+    )
+    parser.add_argument(
+        "--processed-root", type=Path, default=None,
+        help="write outputs (images, annotations_processed.csv, missing_masks_report.csv, "
+        "normalization_stats.json) under this directory instead of data/processed/ -- e.g. "
+        "to keep a --skip-color-normalize run separate from the default processed data",
+    )
     args = parser.parse_args()
+
+    processed_root = args.processed_root or config.PROCESSED_ROOT
+    annotations_processed_path = processed_root / config.ANNOTATIONS_PROCESSED.name
+    missing_masks_report_path = processed_root / config.MISSING_MASKS_REPORT.name
+    norm_stats_path = processed_root / config.NORM_STATS_PATH.name
 
     annotations = pd.read_csv(config.ANNOTATIONS_RAW)
     if args.limit is not None:
         annotations = annotations.head(args.limit)
 
-    previous = _load_previous_results(config.ANNOTATIONS_PROCESSED)
+    previous = _load_previous_results(annotations_processed_path)
 
     results = []
     for i, (_, row) in enumerate(annotations.iterrows(), start=1):
@@ -176,7 +197,7 @@ def main():
             and prev_record is not None
             and prev_record["crop_status"] == "cropped"
             and pd.notna(prev_record["path_processed"])
-            and (config.PROCESSED_ROOT / prev_record["path_processed"]).exists()
+            and (processed_root / prev_record["path_processed"]).exists()
         )
 
         if already_done:
@@ -186,7 +207,9 @@ def main():
                 "error": None,
             }
         else:
-            result = process_one_row(row, config.RAW_ROOT, config.PROCESSED_ROOT)
+            result = process_one_row(
+                row, config.RAW_ROOT, processed_root, normalize=not args.skip_color_normalize
+            )
 
         results.append({**row, **result})
 
@@ -194,22 +217,22 @@ def main():
             print(f"processed {i}/{len(annotations)}")
 
     out_df = pd.DataFrame(results)
-    config.PROCESSED_ROOT.mkdir(parents=True, exist_ok=True)
+    processed_root.mkdir(parents=True, exist_ok=True)
 
     # A --limit run only processes a head-N subset of annotations -- writing
     # that to the real annotations_processed.csv would clobber the full
     # dataset's accumulated results. Smoke tests get their own file instead,
     # mirroring baseline-model/svm_baseline.py's results_smoketest_*.json.
     if args.limit is not None:
-        annotations_out_path = config.ANNOTATIONS_PROCESSED.with_name(
+        annotations_out_path = annotations_processed_path.with_name(
             "annotations_processed_smoketest.csv"
         )
-        missing_out_path = config.MISSING_MASKS_REPORT.with_name(
+        missing_out_path = missing_masks_report_path.with_name(
             "missing_masks_report_smoketest.csv"
         )
     else:
-        annotations_out_path = config.ANNOTATIONS_PROCESSED
-        missing_out_path = config.MISSING_MASKS_REPORT
+        annotations_out_path = annotations_processed_path
+        missing_out_path = missing_masks_report_path
 
     out_df.to_csv(annotations_out_path, index=False)
 
@@ -221,9 +244,9 @@ def main():
     print(out_df["crop_status"].value_counts().to_string())
 
     if args.limit is None:
-        stats = compute_normalization_stats(out_df, config.PROCESSED_ROOT)
+        stats = compute_normalization_stats(out_df, processed_root, norm_stats_path)
         if stats:
-            print(f"\nnormalization stats written to {config.NORM_STATS_PATH}: {stats}")
+            print(f"\nnormalization stats written to {norm_stats_path}: {stats}")
 
 
 if __name__ == "__main__":
