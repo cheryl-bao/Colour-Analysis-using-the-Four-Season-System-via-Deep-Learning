@@ -248,7 +248,7 @@ def main():
     # Only resnet18 (frozen-backbone case) ever has requires_grad=False
     # params; this filter is a no-op for seasoncnn, where every param trains.
     trainable_params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = optim.Adam(trainable_params, lr=args.lr, weight_decay=1e-4)
+    optimizer = optim.Adam(trainable_params, lr=args.lr)
     criterion = nn.CrossEntropyLoss()
 
     checkpoint_dir = Path(__file__).resolve().parent / "checkpoints"
