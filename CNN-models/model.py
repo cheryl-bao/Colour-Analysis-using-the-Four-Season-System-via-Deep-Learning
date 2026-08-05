@@ -25,15 +25,13 @@ class SeasonCNN(nn.Module):
             nn.Conv2d(256, 512, kernel_size=3, padding=1),
             nn.BatchNorm2d(512),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),  # 28 -> 14
+            nn.MaxPool2d(2),  # 56 -> 28
         )
         self.classifier = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
             nn.Flatten(),
-            nn.Linear(512, 256),
-            nn.ReLU(inplace=True),
             nn.Dropout(0.3),
-            nn.Linear(256, num_classes)
+            nn.Linear(512, num_classes)
         )
 
     def forward(self, x):
