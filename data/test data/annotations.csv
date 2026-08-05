@@ -1,0 +1,94 @@
+class,path_rgb_original,path_mask,partition
+autunno,autunno/RM.png,NO_MASK/autunno/RM.png,test
+autunno,autunno/V.png,NO_MASK/autunno/V.png,test
+autunno,autunno/bangchan.png,NO_MASK/autunno/bangchan.png,test
+autunno,autunno/chaeyoung.png,NO_MASK/autunno/chaeyoung.png,test
+autunno,autunno/changbin.png,NO_MASK/autunno/changbin.png,test
+autunno,autunno/elizabeth olsen.png,NO_MASK/autunno/elizabeth olsen.png,test
+autunno,autunno/gisele bundchen.png,NO_MASK/autunno/gisele bundchen.png,test
+autunno,autunno/hailey bieber.png,NO_MASK/autunno/hailey bieber.png,test
+autunno,autunno/hanni.png,NO_MASK/autunno/hanni.png,test
+autunno,autunno/jennie kim.png,NO_MASK/autunno/jennie kim.png,test
+autunno,autunno/jessica biel.png,NO_MASK/autunno/jessica biel.png,test
+autunno,autunno/jodie comer.png,NO_MASK/autunno/jodie comer.png,test
+autunno,autunno/lana del rey.png,NO_MASK/autunno/lana del rey.png,test
+autunno,autunno/mariah carey.png,NO_MASK/autunno/mariah carey.png,test
+autunno,autunno/momo.png,NO_MASK/autunno/momo.png,test
+autunno,autunno/pedro pascal.png,NO_MASK/autunno/pedro pascal.png,test
+autunno,autunno/sofia vergara.png,NO_MASK/autunno/sofia vergara.png,test
+autunno,autunno/vanessa williams.png,NO_MASK/autunno/vanessa williams.png,test
+autunno,autunno/wonyoung.png,NO_MASK/autunno/wonyoung.png,test
+autunno,autunno/yunjin.png,NO_MASK/autunno/yunjin.png,test
+estate,estate/billie eilish.png,NO_MASK/estate/billie eilish.png,test
+estate,estate/chris evans.png,NO_MASK/estate/chris evans.png,test
+estate,estate/dahyun.png,NO_MASK/estate/dahyun.png,test
+estate,estate/gaeul.png,NO_MASK/estate/gaeul.png,test
+estate,estate/giselle.png,NO_MASK/estate/giselle.png,test
+estate,estate/haerin.png,NO_MASK/estate/haerin.png,test
+estate,estate/jeongyeon.png,NO_MASK/estate/jeongyeon.png,test
+estate,estate/joshua.png,NO_MASK/estate/joshua.png,test
+estate,estate/kim go-eun.png,NO_MASK/estate/kim go-eun.png,test
+estate,estate/liz.png,NO_MASK/estate/liz.png,test
+estate,estate/mina.png,NO_MASK/estate/mina.png,test
+estate,estate/minji.png,NO_MASK/estate/minji.png,test
+estate,estate/moon chaewon.png,NO_MASK/estate/moon chaewon.png,test
+estate,estate/moon ga-young.png,NO_MASK/estate/moon ga-young.png,test
+estate,estate/park shin-hye.png,NO_MASK/estate/park shin-hye.png,test
+estate,estate/rooney mara.png,NO_MASK/estate/rooney mara.png,test
+estate,estate/sakura.png,NO_MASK/estate/sakura.png,test
+estate,estate/sunoo.png,NO_MASK/estate/sunoo.png,test
+estate,estate/suzy.png,NO_MASK/estate/suzy.png,test
+estate,estate/taylor swift.png,NO_MASK/estate/taylor swift.png,test
+estate,estate/yunho.png,NO_MASK/estate/yunho.png,test
+inverno,inverno/cha eun woo.png,NO_MASK/inverno/cha eun woo.png,test
+inverno,inverno/chaewon.png,NO_MASK/inverno/chaewon.png,test
+inverno,inverno/dua lipa.png,NO_MASK/inverno/dua lipa.png,test
+inverno,inverno/felix.png,NO_MASK/inverno/felix.png,test
+inverno,inverno/han sohee.png,NO_MASK/inverno/han sohee.png,test
+inverno,inverno/henry cavill.png,NO_MASK/inverno/henry cavill.png,test
+inverno,inverno/hyunjin.png,NO_MASK/inverno/hyunjin.png,test
+inverno,inverno/jeno.png,NO_MASK/inverno/jeno.png,test
+inverno,inverno/jin.png,NO_MASK/inverno/jin.png,test
+inverno,inverno/jisoo.png,NO_MASK/inverno/jisoo.png,test
+inverno,inverno/jung ji-hyun.png,NO_MASK/inverno/jung ji-hyun.png,test
+inverno,inverno/jungkook.png,NO_MASK/inverno/jungkook.png,test
+inverno,inverno/jungwon.png,NO_MASK/inverno/jungwon.png,test
+inverno,inverno/karina.png,NO_MASK/inverno/karina.png,test
+inverno,inverno/kim hye-soo.png,NO_MASK/inverno/kim hye-soo.png,test
+inverno,inverno/lee know.png,NO_MASK/inverno/lee know.png,test
+inverno,inverno/moon geun-young.png,NO_MASK/inverno/moon geun-young.png,test
+inverno,inverno/niki.png,NO_MASK/inverno/niki.png,test
+inverno,inverno/olivia rodrigo.png,NO_MASK/inverno/olivia rodrigo.png,test
+inverno,inverno/selena gomez.png,NO_MASK/inverno/selena gomez.png,test
+inverno,inverno/sofia carson.png,NO_MASK/inverno/sofia carson.png,test
+inverno,inverno/song hye-kyo.png,NO_MASK/inverno/song hye-kyo.png,test
+inverno,inverno/suga.png,NO_MASK/inverno/suga.png,test
+inverno,inverno/taeyong.png,NO_MASK/inverno/taeyong.png,test
+inverno,inverno/timothee chalamet.png,NO_MASK/inverno/timothee chalamet.png,test
+inverno,inverno/tzuyu.png,NO_MASK/inverno/tzuyu.png,test
+inverno,inverno/vernon.png,NO_MASK/inverno/vernon.png,test
+inverno,inverno/winter.png,NO_MASK/inverno/winter.png,test
+inverno,inverno/yujin.png,NO_MASK/inverno/yujin.png,test
+primavera,primavera/IN.png,NO_MASK/primavera/IN.png,test
+primavera,primavera/IU.png,NO_MASK/primavera/IU.png,test
+primavera,primavera/anya taylor-joy.png,NO_MASK/primavera/anya taylor-joy.png,test
+primavera,primavera/ariana grande.png,NO_MASK/primavera/ariana grande.png,test
+primavera,primavera/danielle.png,NO_MASK/primavera/danielle.png,test
+primavera,primavera/doja cat.png,NO_MASK/primavera/doja cat.png,test
+primavera,primavera/florence pugh.png,NO_MASK/primavera/florence pugh.png,test
+primavera,primavera/han.png,NO_MASK/primavera/han.png,test
+primavera,primavera/hyein.png,NO_MASK/primavera/hyein.png,test
+primavera,primavera/j-hope.png,NO_MASK/primavera/j-hope.png,test
+primavera,primavera/jennifer lawrence.png,NO_MASK/primavera/jennifer lawrence.png,test
+primavera,primavera/jihyo.png,NO_MASK/primavera/jihyo.png,test
+primavera,primavera/jimin.png,NO_MASK/primavera/jimin.png,test
+primavera,primavera/leeseo.png,NO_MASK/primavera/leeseo.png,test
+primavera,primavera/lisa.png,NO_MASK/primavera/lisa.png,test
+primavera,primavera/nayeon.png,NO_MASK/primavera/nayeon.png,test
+primavera,primavera/ningning.png,NO_MASK/primavera/ningning.png,test
+primavera,primavera/rei.png,NO_MASK/primavera/rei.png,test
+primavera,primavera/rose.png,NO_MASK/primavera/rose.png,test
+primavera,primavera/sabrina carpenter.png,NO_MASK/primavera/sabrina carpenter.png,test
+primavera,primavera/sana.png,NO_MASK/primavera/sana.png,test
+primavera,primavera/seungmin.png,NO_MASK/primavera/seungmin.png,test
+primavera,primavera/sydney sweeney.png,NO_MASK/primavera/sydney sweeney.png,test

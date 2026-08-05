@@ -18,8 +18,18 @@
 !figures/
 !figures/**
 
+# Small hand-picked test set (~37MB raw) -- unlike data/processed/ and
+# data/processed_crop_only/ (multi-GB, Drive-symlinked instead), this is
+# small enough to just commit directly.
+!data/
+!data/test data/
+!data/test data/raw/
+!data/test data/raw/**
+!data/test data/annotations.csv
+
 # regenerable training artifacts -- not source
 CNN-models/checkpoints/
+data/test data/processed/
 
 __pycache__/
 *.pyc

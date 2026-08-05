@@ -171,14 +171,28 @@ def main():
         "normalization_stats.json) under this directory instead of data/processed/ -- e.g. "
         "to keep a --skip-color-normalize run separate from the default processed data",
     )
+    parser.add_argument(
+        "--raw-root", type=Path, default=None,
+        help="read source images/masks from this directory instead of data/raw/ -- e.g. "
+        "for a separately-dropped-in test set. path_rgb_original/path_mask in "
+        "--annotations-raw are resolved relative to this",
+    )
+    parser.add_argument(
+        "--annotations-raw", type=Path, default=None,
+        help="read the raw annotations csv from this path instead of "
+        "data/raw/annotations.csv -- e.g. one built with "
+        "src.build_folder_annotations for a --raw-root that isn't data/raw/",
+    )
     args = parser.parse_args()
 
+    raw_root = args.raw_root or config.RAW_ROOT
+    annotations_raw_path = args.annotations_raw or config.ANNOTATIONS_RAW
     processed_root = args.processed_root or config.PROCESSED_ROOT
     annotations_processed_path = processed_root / config.ANNOTATIONS_PROCESSED.name
     missing_masks_report_path = processed_root / config.MISSING_MASKS_REPORT.name
     norm_stats_path = processed_root / config.NORM_STATS_PATH.name
 
-    annotations = pd.read_csv(config.ANNOTATIONS_RAW)
+    annotations = pd.read_csv(annotations_raw_path)
     if args.limit is not None:
         annotations = annotations.head(args.limit)
 
@@ -208,7 +222,7 @@ def main():
             }
         else:
             result = process_one_row(
-                row, config.RAW_ROOT, processed_root, normalize=not args.skip_color_normalize
+                row, raw_root, processed_root, normalize=not args.skip_color_normalize
             )
 
         results.append({**row, **result})
