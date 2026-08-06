@@ -1,49 +1,86 @@
 class,path_rgb_original,path_mask,partition
 autunno,autunno/RM.png,NO_MASK/autunno/RM.png,test
 autunno,autunno/V.png,NO_MASK/autunno/V.png,test
+autunno,autunno/amber heard.png,NO_MASK/autunno/amber heard.png,test
+autunno,autunno/aubrey plaza.png,NO_MASK/autunno/aubrey plaza.png,test
 autunno,autunno/bangchan.png,NO_MASK/autunno/bangchan.png,test
+autunno,autunno/brendan fraser.png,NO_MASK/autunno/brendan fraser.png,test
 autunno,autunno/chaeyoung.png,NO_MASK/autunno/chaeyoung.png,test
 autunno,autunno/changbin.png,NO_MASK/autunno/changbin.png,test
+autunno,autunno/chris pratt.png,NO_MASK/autunno/chris pratt.png,test
+autunno,autunno/devon aoki.png,NO_MASK/autunno/devon aoki.png,test
 autunno,autunno/elizabeth olsen.png,NO_MASK/autunno/elizabeth olsen.png,test
+autunno,autunno/ellie kemper.png,NO_MASK/autunno/ellie kemper.png,test
 autunno,autunno/gisele bundchen.png,NO_MASK/autunno/gisele bundchen.png,test
+autunno,autunno/hailee steinfeld.png,NO_MASK/autunno/hailee steinfeld.png,test
 autunno,autunno/hailey bieber.png,NO_MASK/autunno/hailey bieber.png,test
 autunno,autunno/hanni.png,NO_MASK/autunno/hanni.png,test
+autunno,autunno/hilary swank.png,NO_MASK/autunno/hilary swank.png,test
+autunno,autunno/jason momoa.png,NO_MASK/autunno/jason momoa.png,test
 autunno,autunno/jennie kim.png,NO_MASK/autunno/jennie kim.png,test
 autunno,autunno/jessica biel.png,NO_MASK/autunno/jessica biel.png,test
 autunno,autunno/jodie comer.png,NO_MASK/autunno/jodie comer.png,test
+autunno,autunno/joseph gordan-levitt.png,NO_MASK/autunno/joseph gordan-levitt.png,test
+autunno,autunno/justin timberlake.png,NO_MASK/autunno/justin timberlake.png,test
 autunno,autunno/lana del rey.png,NO_MASK/autunno/lana del rey.png,test
+autunno,autunno/madelaine petsch.png,NO_MASK/autunno/madelaine petsch.png,test
 autunno,autunno/mariah carey.png,NO_MASK/autunno/mariah carey.png,test
+autunno,autunno/matt damon.png,NO_MASK/autunno/matt damon.png,test
+autunno,autunno/meryl streep.png,NO_MASK/autunno/meryl streep.png,test
 autunno,autunno/momo.png,NO_MASK/autunno/momo.png,test
 autunno,autunno/pedro pascal.png,NO_MASK/autunno/pedro pascal.png,test
+autunno,autunno/shailene woodley.png,NO_MASK/autunno/shailene woodley.png,test
 autunno,autunno/sofia vergara.png,NO_MASK/autunno/sofia vergara.png,test
+autunno,autunno/tom hardy.png,NO_MASK/autunno/tom hardy.png,test
 autunno,autunno/vanessa williams.png,NO_MASK/autunno/vanessa williams.png,test
+autunno,autunno/victoria pedretti.png,NO_MASK/autunno/victoria pedretti.png,test
 autunno,autunno/wonyoung.png,NO_MASK/autunno/wonyoung.png,test
 autunno,autunno/yunjin.png,NO_MASK/autunno/yunjin.png,test
+estate,estate/austin butler.png,NO_MASK/estate/austin butler.png,test
 estate,estate/billie eilish.png,NO_MASK/estate/billie eilish.png,test
 estate,estate/chris evans.png,NO_MASK/estate/chris evans.png,test
 estate,estate/dahyun.png,NO_MASK/estate/dahyun.png,test
 estate,estate/gaeul.png,NO_MASK/estate/gaeul.png,test
 estate,estate/giselle.png,NO_MASK/estate/giselle.png,test
 estate,estate/haerin.png,NO_MASK/estate/haerin.png,test
+estate,estate/heather locklear.png,NO_MASK/estate/heather locklear.png,test
+estate,estate/hugh grant.png,NO_MASK/estate/hugh grant.png,test
 estate,estate/jeongyeon.png,NO_MASK/estate/jeongyeon.png,test
+estate,estate/jessie williams.png,NO_MASK/estate/jessie williams.png,test
 estate,estate/joshua.png,NO_MASK/estate/joshua.png,test
+estate,estate/katherine langford.png,NO_MASK/estate/katherine langford.png,test
 estate,estate/kim go-eun.png,NO_MASK/estate/kim go-eun.png,test
+estate,estate/lily donaldson.png,NO_MASK/estate/lily donaldson.png,test
 estate,estate/liz.png,NO_MASK/estate/liz.png,test
+estate,estate/lizzy caplan.png,NO_MASK/estate/lizzy caplan.png,test
+estate,estate/lorde.png,NO_MASK/estate/lorde.png,test
+estate,estate/maisie williams.png,NO_MASK/estate/maisie williams.png,test
+estate,estate/margaret qualley.png,NO_MASK/estate/margaret qualley.png,test
+estate,estate/michelle pfieffer.png,NO_MASK/estate/michelle pfieffer.png,test
+estate,estate/miley cyrus.png,NO_MASK/estate/miley cyrus.png,test
 estate,estate/mina.png,NO_MASK/estate/mina.png,test
 estate,estate/minji.png,NO_MASK/estate/minji.png,test
 estate,estate/moon chaewon.png,NO_MASK/estate/moon chaewon.png,test
 estate,estate/moon ga-young.png,NO_MASK/estate/moon ga-young.png,test
+estate,estate/olivia wilde.png,NO_MASK/estate/olivia wilde.png,test
 estate,estate/park shin-hye.png,NO_MASK/estate/park shin-hye.png,test
+estate,estate/paul walker.png,NO_MASK/estate/paul walker.png,test
 estate,estate/rooney mara.png,NO_MASK/estate/rooney mara.png,test
 estate,estate/sakura.png,NO_MASK/estate/sakura.png,test
+estate,estate/shalom harlow.png,NO_MASK/estate/shalom harlow.png,test
 estate,estate/sunoo.png,NO_MASK/estate/sunoo.png,test
 estate,estate/suzy.png,NO_MASK/estate/suzy.png,test
 estate,estate/taylor swift.png,NO_MASK/estate/taylor swift.png,test
 estate,estate/yunho.png,NO_MASK/estate/yunho.png,test
+estate,estate/zoe kazan.png,NO_MASK/estate/zoe kazan.png,test
+inverno,inverno/alexandra daddario.png,NO_MASK/inverno/alexandra daddario.png,test
+inverno,inverno/awkwafina.png,NO_MASK/inverno/awkwafina.png,test
 inverno,inverno/cha eun woo.png,NO_MASK/inverno/cha eun woo.png,test
 inverno,inverno/chaewon.png,NO_MASK/inverno/chaewon.png,test
 inverno,inverno/dua lipa.png,NO_MASK/inverno/dua lipa.png,test
+inverno,inverno/fan bingbing.png,NO_MASK/inverno/fan bingbing.png,test
 inverno,inverno/felix.png,NO_MASK/inverno/felix.png,test
+inverno,inverno/gemma chan.png,NO_MASK/inverno/gemma chan.png,test
 inverno,inverno/han sohee.png,NO_MASK/inverno/han sohee.png,test
 inverno,inverno/henry cavill.png,NO_MASK/inverno/henry cavill.png,test
 inverno,inverno/hyunjin.png,NO_MASK/inverno/hyunjin.png,test
@@ -55,10 +92,14 @@ inverno,inverno/jungkook.png,NO_MASK/inverno/jungkook.png,test
 inverno,inverno/jungwon.png,NO_MASK/inverno/jungwon.png,test
 inverno,inverno/karina.png,NO_MASK/inverno/karina.png,test
 inverno,inverno/kim hye-soo.png,NO_MASK/inverno/kim hye-soo.png,test
+inverno,inverno/laura harrier.png,NO_MASK/inverno/laura harrier.png,test
 inverno,inverno/lee know.png,NO_MASK/inverno/lee know.png,test
+inverno,inverno/michael b jordan.png,NO_MASK/inverno/michael b jordan.png,test
 inverno,inverno/moon geun-young.png,NO_MASK/inverno/moon geun-young.png,test
 inverno,inverno/niki.png,NO_MASK/inverno/niki.png,test
+inverno,inverno/octavia spencer.png,NO_MASK/inverno/octavia spencer.png,test
 inverno,inverno/olivia rodrigo.png,NO_MASK/inverno/olivia rodrigo.png,test
+inverno,inverno/robert downey jr.png,NO_MASK/inverno/robert downey jr.png,test
 inverno,inverno/selena gomez.png,NO_MASK/inverno/selena gomez.png,test
 inverno,inverno/sofia carson.png,NO_MASK/inverno/sofia carson.png,test
 inverno,inverno/song hye-kyo.png,NO_MASK/inverno/song hye-kyo.png,test
@@ -67,13 +108,23 @@ inverno,inverno/taeyong.png,NO_MASK/inverno/taeyong.png,test
 inverno,inverno/timothee chalamet.png,NO_MASK/inverno/timothee chalamet.png,test
 inverno,inverno/tzuyu.png,NO_MASK/inverno/tzuyu.png,test
 inverno,inverno/vernon.png,NO_MASK/inverno/vernon.png,test
+inverno,inverno/will smith.png,NO_MASK/inverno/will smith.png,test
 inverno,inverno/winter.png,NO_MASK/inverno/winter.png,test
 inverno,inverno/yujin.png,NO_MASK/inverno/yujin.png,test
+inverno,inverno/zhang ziyi.png,NO_MASK/inverno/zhang ziyi.png,test
 primavera,primavera/IN.png,NO_MASK/primavera/IN.png,test
 primavera,primavera/IU.png,NO_MASK/primavera/IU.png,test
+primavera,primavera/amanda seyfried.png,NO_MASK/primavera/amanda seyfried.png,test
+primavera,primavera/amy adams.png,NO_MASK/primavera/amy adams.png,test
+primavera,primavera/amy schumer.png,NO_MASK/primavera/amy schumer.png,test
+primavera,primavera/angourie rice.png,NO_MASK/primavera/angourie rice.png,test
 primavera,primavera/anya taylor-joy.png,NO_MASK/primavera/anya taylor-joy.png,test
 primavera,primavera/ariana grande.png,NO_MASK/primavera/ariana grande.png,test
+primavera,primavera/bryce dallas howard.png,NO_MASK/primavera/bryce dallas howard.png,test
+primavera,primavera/chloe grace moretz.png,NO_MASK/primavera/chloe grace moretz.png,test
+primavera,primavera/chris hemsworth.png,NO_MASK/primavera/chris hemsworth.png,test
 primavera,primavera/danielle.png,NO_MASK/primavera/danielle.png,test
+primavera,primavera/demi lovato.png,NO_MASK/primavera/demi lovato.png,test
 primavera,primavera/doja cat.png,NO_MASK/primavera/doja cat.png,test
 primavera,primavera/florence pugh.png,NO_MASK/primavera/florence pugh.png,test
 primavera,primavera/han.png,NO_MASK/primavera/han.png,test
@@ -82,13 +133,19 @@ primavera,primavera/j-hope.png,NO_MASK/primavera/j-hope.png,test
 primavera,primavera/jennifer lawrence.png,NO_MASK/primavera/jennifer lawrence.png,test
 primavera,primavera/jihyo.png,NO_MASK/primavera/jihyo.png,test
 primavera,primavera/jimin.png,NO_MASK/primavera/jimin.png,test
+primavera,primavera/kristen bell.png,NO_MASK/primavera/kristen bell.png,test
 primavera,primavera/leeseo.png,NO_MASK/primavera/leeseo.png,test
 primavera,primavera/lisa.png,NO_MASK/primavera/lisa.png,test
+primavera,primavera/matthew mcconaughey.png,NO_MASK/primavera/matthew mcconaughey.png,test
+primavera,primavera/miranda cosgrove.png,NO_MASK/primavera/miranda cosgrove.png,test
 primavera,primavera/nayeon.png,NO_MASK/primavera/nayeon.png,test
+primavera,primavera/nicholas hoult.png,NO_MASK/primavera/nicholas hoult.png,test
 primavera,primavera/ningning.png,NO_MASK/primavera/ningning.png,test
 primavera,primavera/rei.png,NO_MASK/primavera/rei.png,test
 primavera,primavera/rose.png,NO_MASK/primavera/rose.png,test
 primavera,primavera/sabrina carpenter.png,NO_MASK/primavera/sabrina carpenter.png,test
+primavera,primavera/sadie sink.png,NO_MASK/primavera/sadie sink.png,test
 primavera,primavera/sana.png,NO_MASK/primavera/sana.png,test
 primavera,primavera/seungmin.png,NO_MASK/primavera/seungmin.png,test
+primavera,primavera/solange.png,NO_MASK/primavera/solange.png,test
 primavera,primavera/sydney sweeney.png,NO_MASK/primavera/sydney sweeney.png,test
